@@ -2,7 +2,7 @@ name: Deploy Blazor to GitHub Pages
 
 on:
   push:
-    branches: [ MyTM ] # hoặc master tùy tên nhánh chính của bạn
+    branches: [ master ] # hoặc master tùy tên nhánh chính của bạn
 
 jobs:
   deploy:
