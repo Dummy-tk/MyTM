@@ -2,7 +2,7 @@ name: Deploy Blazor to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # hoặc master tùy tên nhánh chính của bạn
+    branches: [ MyTM ] # hoặc master tùy tên nhánh chính của bạn
 
 jobs:
   deploy:
@@ -12,7 +12,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x' # Thay đổi theo phiên bản .NET bạn sử dụng (7.0, 8.0)
+        dotnet-version: '10.0.x' # Thay đổi theo phiên bản .NET bạn sử dụng (7.0, 8.0)
     
     - name: Publish Blazor WebAssembly
       run: dotnet publish -c Release -o release
