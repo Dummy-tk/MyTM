@@ -1,0 +1,79 @@
+﻿@page "/my-tasks"
+@rendermode InteractiveServer
+
+<PageTitle>Quản lý Công việc Căn bản</PageTitle>
+
+<h3>📋 Danh Sách Công Việc Của Tôi</h3>
+
+<!-- 1. KHU VỰC NHẬP DỮ LIỆU -->
+<div style="margin-bottom: 20px;">
+    <input type="text" 
+           placeholder="Nhập tên công việc..." 
+           @bind="newTaskTitle" 
+           style="padding: 8px; width: 300px;" />
+
+    <button @onclick="AddTask" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+        + Thêm Task
+    </button>
+</div>
+
+<!-- 2. KHU VỰC HIỂN THỊ DANH SÁCH -->
+@if (taskList.Count == 0)
+{
+    <p><i>Chưa có công việc nào. Hãy thêm công việc mới!</i></p>
+}
+else
+{
+    <ul style="list-style-type: none; padding: 0;">
+        @foreach (var task in taskList)
+        {
+            <li style="margin-bottom: 10px; background: #f4f5f7; padding: 10px; border-radius: 4px; width: 400px; display: flex; justify-content: space-between;">
+                
+                <!-- Tick chọn hoàn thành -->
+                <label>
+                    <input type="checkbox" @bind="task.IsCompleted" />
+                    <span style="@(task.IsCompleted ? "text-decoration: line-through; color: gray;" : "font-weight: bold;")">
+                        @task.Title
+                    </span>
+                </label>
+
+                <!-- Nút Xóa -->
+                <button @onclick="() => DeleteTask(task)" style="color: red; border: none; background: none; cursor: pointer;">
+                    ❌
+                </button>
+            </li>
+        }
+    </ul>
+}
+
+<!-- 3. KHU VỰC LOGIC C# -->
+@code {
+    // Định nghĩa Lớp (Model) cho 1 Công việc
+    public class TaskItem
+    {
+        public string Title { get; set; } = "";
+        public bool IsCompleted { get; set; } = false;
+    }
+
+    // Biến lưu trữ văn bản trong ô <input>
+    private string newTaskTitle = "";
+
+    // Danh sách chứa các Task
+    private List<TaskItem> taskList = new List<TaskItem>();
+
+    // Hàm thêm Task
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTaskTitle))
+        {
+            taskList.Add(new TaskItem { Title = newTaskTitle });
+            newTaskTitle = ""; // Xóa trắng ô input sau khi thêm thành công
+        }
+    }
+
+    // Hàm xóa Task
+    private void DeleteTask(TaskItem item)
+    {
+        taskList.Remove(item);
+    }
+}
