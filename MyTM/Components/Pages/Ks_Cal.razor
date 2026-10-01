@@ -1,0 +1,300 @@
+﻿@page "/ks-cal"
+@rendermode InteractiveServer
+
+@using System.Globalization
+
+<PageTitle>K's Cal - Web</PageTitle>
+
+<h3>K's Cal (Web)</h3>
+
+<div style="display:flex; gap:12px; margin-bottom:12px;">
+    <button class="btn btn-secondary" @onclick="() => SelectTab(Tab.Standard)">Standard</button>
+    <button class="btn btn-secondary" @onclick="() => SelectTab(Tab.Money)">Money</button>
+    <button class="btn btn-secondary" @onclick="() => SelectTab(Tab.Temperature)">Temperature</button>
+</div>
+
+@if (currentTab == Tab.Standard)
+{
+    <div style="width:420px;">
+        <div style="background:#222; color:white; padding:12px; border-radius:6px; margin-bottom:8px;">
+            <div style="font-size:0.9rem; color:lightgray; min-height: 1.2rem;">@history</div>
+            <input class="form-control" readonly value="@display" style="font-size:1.6rem; text-align:right; background:transparent; border:none; color:white;" />
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px;">
+            <button class="btn btn-light" @onclick="ClearAll">C</button>
+            <button class="btn btn-light" @onclick="Backspace">⌫</button>
+            <button class="btn btn-light" @onclick="ToggleSign">+/-</button>
+            <button class="btn btn-warning" @onclick='() => OperatorClicked("/")'>/</button>
+
+            <button class="btn btn-light" @onclick='() => DigitClicked("7")'>7</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("8")'>8</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("9")'>9</button>
+            <button class="btn btn-warning" @onclick='() => OperatorClicked("*")'>*</button>
+
+            <button class="btn btn-light" @onclick='() => DigitClicked("4")'>4</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("5")'>5</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("6")'>6</button>
+            <button class="btn btn-warning" @onclick='() => OperatorClicked("-")'>-</button>
+
+            <button class="btn btn-light" @onclick='() => DigitClicked("1")'>1</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("2")'>2</button>
+            <button class="btn btn-light" @onclick='() => DigitClicked("3")'>3</button>
+            <button class="btn btn-warning" @onclick='() => OperatorClicked("+")'>+</button>
+
+            <button class="btn btn-light" style="grid-column: span 2;" @onclick='() => DigitClicked("0")'>0</button>
+            <button class="btn btn-light" @onclick="DecimalPoint">@decimalSeparator</button>
+            <button class="btn btn-success" @onclick="Equals">=</button>
+        </div>
+
+        <div style="margin-top:8px; display:flex; gap:8px;">
+            <button class="btn btn-outline-secondary" @onclick="Square">x²</button>
+            <button class="btn btn-outline-secondary" @onclick="Sqrt">√x</button>
+            <button class="btn btn-outline-secondary" @onclick="Reciprocal">1/x</button>
+            <button class="btn btn-outline-secondary" @onclick="Percent">%</button>
+        </div>
+    </div>
+}
+else if (currentTab == Tab.Money)
+{
+    <div style="width:420px;">
+        <h5>Money (placeholder)</h5>
+        <p>Move your money calculator logic here. This example keeps focus on Standard and Temperature.</p>
+    </div>
+}
+else if (currentTab == Tab.Temperature)
+{
+    <div style="width:420px;">
+        <h5>Temperature Converter</h5>
+        <div class="mb-2">
+            <input class="form-control" @bind="tempInput" @bind:event="oninput" />
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <select class="form-select" @bind="tempFrom">
+                @foreach (var u in tempUnits) { <option value="@u">@u</option> }
+            </select>
+            <select class="form-select" @bind="tempTo">
+                @foreach (var u in tempUnits) { <option value="@u">@u</option> }
+            </select>
+        </div>
+        <div>
+            <button class="btn btn-primary" @onclick="ConvertTemp">Convert</button>
+            <span style="margin-left:12px; font-weight:bold;">@tempOutput</span>
+        </div>
+    </div>
+}
+
+@code {
+    enum Tab { Standard, Money, Temperature }
+    Tab currentTab = Tab.Standard;
+
+    // Standard calculator state
+    string display = "0";
+    string history = "";
+    double first = 0;
+    double second = 0;
+    double result = 0;
+    string op = "";
+    bool opEntered = false;
+    bool resultShown = false;
+
+    // Temperature
+    string[] tempUnits = new[] { "°C", "°F", "K" };
+    string tempFrom = "°C";
+    string tempTo = "°F";
+    string tempInput = "0";
+    string tempOutput = "";
+    string decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+
+    void SelectTab(Tab t)
+    {
+        currentTab = t;
+    }
+
+    void DigitClicked(string d)
+    {
+        if (resultShown)
+        {
+            display = "0";
+            resultShown = false;
+        }
+
+        if (display == "0" || opEntered)
+        {
+            display = d;
+            opEntered = false;
+        }
+        else
+        {
+            display += d;
+        }
+    }
+
+    void DecimalPoint()
+    {
+        if (!display.Contains(decimalSeparator))
+        {
+            display += decimalSeparator;
+        }
+    }
+
+    void OperatorClicked(string oper)
+    {
+        if (!opEntered)
+        {
+            if (!double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out first))
+            {
+                first = 0;
+            }
+            op = oper;
+            history = $"{first} {op}";
+            opEntered = true;
+            resultShown = false;
+        }
+        else
+        {
+            op = oper;
+            history = $"{first} {op}";
+        }
+    }
+
+    void Equals()
+    {
+        if (string.IsNullOrEmpty(op))
+            return;
+
+        if (!double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out second))
+            second = 0;
+
+        switch (op)
+        {
+            case "+":
+                result = first + second;
+                break;
+            case "-":
+                result = first - second;
+                break;
+            case "*":
+                result = first * second;
+                break;
+            case "/":
+                if (second == 0)
+                {
+                    display = "Cannot divide by 0";
+                    return;
+                }
+                result = first / second;
+                break;
+            default:
+                return;
+        }
+
+        history = $"{first} {op} {second} =";
+        display = FormatResult(result);
+        first = result;
+        resultShown = true;
+        opEntered = false;
+        op = "";
+    }
+
+    void ClearAll()
+    {
+        display = "0";
+        history = "";
+        first = second = result = 0;
+        op = "";
+        opEntered = false;
+        resultShown = false;
+    }
+
+    void Backspace()
+    {
+        if (display.Length <= 1)
+            display = "0";
+        else
+            display = display.Substring(0, display.Length - 1);
+    }
+
+    void ToggleSign()
+    {
+        if (double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var val))
+        {
+            val = -val;
+            display = FormatResult(val);
+        }
+    }
+
+    void Square()
+    {
+        if (double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var val))
+        {
+            var r = val * val;
+            display = FormatResult(r);
+            resultShown = true;
+        }
+    }
+
+    void Sqrt()
+    {
+        if (double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var val))
+        {
+            if (val < 0) { display = "NaN"; return; }
+            var r = Math.Sqrt(val);
+            display = FormatResult(r);
+            resultShown = true;
+        }
+    }
+
+    void Reciprocal()
+    {
+        if (double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var val))
+        {
+            if (val == 0) { display = "Cannot divide by 0"; return; }
+            var r = 1.0 / val;
+            display = FormatResult(r);
+            resultShown = true;
+        }
+    }
+
+    void Percent()
+    {
+        if (double.TryParse(display.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var val))
+        {
+            var r = val / 100.0;
+            display = FormatResult(r);
+            resultShown = true;
+        }
+    }
+
+    string FormatResult(double v)
+    {
+        return v.ToString("0.##########", CultureInfo.InvariantCulture).Replace(".", decimalSeparator);
+    }
+
+    void ConvertTemp()
+    {
+        if (!double.TryParse(tempInput.Replace(decimalSeparator, "."), NumberStyles.Any, CultureInfo.InvariantCulture, out var inputVal))
+        {
+            tempOutput = "";
+            return;
+        }
+
+        double celsius = tempFrom switch
+        {
+            "°C" => inputVal,
+            "°F" => (inputVal - 32) / 1.8,
+            "K" => inputVal - 273.15,
+            _ => inputVal
+        };
+
+        double resultVal = tempTo switch
+        {
+            "°C" => celsius,
+            "°F" => celsius * 1.8 + 32,
+            "K" => celsius + 273.15,
+            _ => celsius
+        };
+
+        tempOutput = resultVal.ToString("0.##", CultureInfo.CurrentCulture) + " " + tempTo;
+    }
+}
