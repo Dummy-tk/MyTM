@@ -1,23 +1,43 @@
 ﻿@inherits LayoutComponentBase
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     AlignItems="AlignItems.Center"
+                     Gap="1rem"
+                     class="rz-px-4">
 
-<div class="page">
-    <div class="sidebar">
+            <RadzenSidebarToggle Click="@ToggleSidebar" />
+
+            <RadzenText Text="QUẢN LÝ KHÁCH RA VÀO"
+                        TextStyle="TextStyle.H5"
+                        class="rz-m-0" />
+
+        </RadzenStack>
+    </RadzenHeader>
+
+    <RadzenSidebar @bind-Expanded="sidebarExpanded">
         <NavMenu />
-    </div>
+    </RadzenSidebar>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+    <RadzenBody>
+        <div class="rz-p-4">
             @Body
-        </article>
-    </main>
-</div>
+        </div>
+    </RadzenBody>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    <RadzenFooter>
+        <div class="rz-px-4 rz-py-2">
+            Hệ thống quản lý khách ra vào cơ quan
+        </div>
+    </RadzenFooter>
+</RadzenLayout>
+
+@code {
+    private bool sidebarExpanded = true;
+
+    private void ToggleSidebar()
+    {
+        sidebarExpanded = !sidebarExpanded;
+        Console.WriteLine($"Sidebar expanded: {sidebarExpanded}");
+    }
+}

@@ -1,41 +1,29 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">MyTM</a>
-    </div>
-</div>
+﻿
+<RadzenPanelMenu>
+    <RadzenPanelMenuItem Text="Tổng quan"
+                         Icon="dashboard"
+                         Path="/" />
+    <RadzenPanelMenuItem Text="Weather"
+                         Icon="dashboard"
+                         Path="/weather" />
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    <RadzenPanelMenuItem Text="Quản lý khách"
+                         Icon="people"
+                         Path="/Login" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    <RadzenPanelMenuItem Text="Lượt ra vào"
+                         Icon="history"
+                         Path="/luotravao" />
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    <RadzenPanelMenuItem Text="Đăng ký khách"
+                         Icon="person_add"
+                         Path="/dangkykhach" />
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+    <RadzenPanelMenuItem Text="Báo cáo thống kê"
+                         Icon="bar_chart"
+                         Path="/baocao" />
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="my-tasks">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> MyTasks
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ks-Cal">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Ks_Cal
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+    <RadzenPanelMenuItem Text="Cài đặt"
+                         Icon="settings"
+                         Path="/caidat" />
+</RadzenPanelMenu>
